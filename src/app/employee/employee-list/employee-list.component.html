@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand navbar-light bg-light">
+  <div class="nav navbar-nav">
+    <a class="nav-item nav-link active" href="#" aria-current="page"
+      >NgCrudOperationDemo <span class="visually-hidden">(current)</span></a
+    >
+    <!-- <a class="nav-item nav-link" href="#">Home</a> -->
+  </div>
+</nav>
+<button type="button" class="btn btn-primary" (click)="openModal(template)">
+  Create template modal
+</button>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Modal</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body"> 
+
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" id="name" formControlName="name" class="form-control">
+        <div *ngIf="employeeForm.get('name')?.invalid && (employeeForm.get('name')?.dirty || employeeForm.get('name')?.touched)" class="text-danger">
+          Name is required.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <input type="text" id="department" formControlName="department" class="form-control">
+        <div *ngIf="employeeForm.get('department')?.invalid && (employeeForm.get('department')?.dirty || employeeForm.get('department')?.touched)" class="text-danger">
+          Department is required.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="hire_date" class="form-label">Hire Date</label>
+        <input type="date" id="hire_date" formControlName="hire_date" class="form-control">
+        <div *ngIf="employeeForm.get('hire_date')?.invalid && (employeeForm.get('hire_date')?.dirty || employeeForm.get('hire_date')?.touched)" class="text-danger">
+          Hire Date is required.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="salary" class="form-label">Salary</label>
+        <input type="number" id="salary" formControlName="salary" class="form-control">
+        <div *ngIf="employeeForm.get('salary')?.invalid && (employeeForm.get('salary')?.dirty || employeeForm.get('salary')?.touched)" class="text-danger">
+          Salary is required and must be greater than 0.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="is_active" class="form-check-label">Active</label>
+        <input type="checkbox" id="is_active" formControlName="is_active" class="form-check-input">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</ng-template>
+
+
+<div class="container"></div>
+

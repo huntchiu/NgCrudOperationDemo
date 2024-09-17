@@ -1,0 +1,12 @@
+{
+  "employees": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "department": "Sales",
+      "hire_date": "2023-01-01",
+      "salary": 50000,
+      "is_active": true
+    }
+  ]
+}
