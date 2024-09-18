@@ -1,0 +1,79 @@
+<div class="container">
+  <div class="card border-primary mt-3">
+    <div class="card-body">
+      <!-- {{ employee | json }} -->
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="name" class="form-label">姓名</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+          />
+
+          @if( employeeForm.get('name')?.invalid &&
+          (employeeForm.get('name')?.dirty ||
+          employeeForm.get('name')?.touched)){
+          <div class="text-danger">请输入姓名</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="department" class="form-label">部门</label>
+          <input
+            type="text"
+            id="department"
+            formControlName="department"
+            class="form-control"
+          />
+
+          @if( employeeForm.get('department')?.invalid &&
+          (employeeForm.get('department')?.dirty ||
+          employeeForm.get('department')?.touched)){
+          <div class="text-danger">请输入部门</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="hire_date" class="form-label">入职时间</label>
+          <input
+            type="date"
+            id="hire_date"
+            formControlName="hire_date"
+            class="form-control"
+          />
+
+          @if( employeeForm.get('hire_date')?.invalid &&
+          (employeeForm.get('hire_date')?.dirty ||
+          employeeForm.get('hire_date')?.touched)){
+          <div class="text-danger">请输入入职时间</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="salary" class="form-label">Salary</label>
+          <input
+            type="number"
+            id="salary"
+            formControlName="salary"
+            class="form-control"
+          />
+
+          @if( employeeForm.get('salary')?.invalid &&
+          (employeeForm.get('salary')?.dirty ||
+          employeeForm.get('salary')?.touched)){
+          <div class="text-danger">薪资不能小于0</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="is_active" class="form-check-label">状态</label>
+          <input
+            type="checkbox"
+            id="is_active"
+            formControlName="is_active"
+            class="form-check-input"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">提交</button>
+      </form>
+    </div>
+  </div>
+</div>
