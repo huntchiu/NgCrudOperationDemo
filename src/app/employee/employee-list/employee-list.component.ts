@@ -10,23 +10,21 @@ import { EmployeeService } from '../employee.service';
 import { Employee } from '../employee.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, // 导入 ReactiveFormsModule
-    CommonModule,
-    RouterModule,
-  ],
-  providers: [BsModalService, EmployeeService],
+  imports: [ReactiveFormsModule, CommonModule, RouterModule, ModalModule],
+  providers: [],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.css',
 })
 export class EmployeeListComponent implements OnInit {
   modalRef: BsModalRef | undefined;
   employeeForm!: FormGroup;
-  employees!: Employee[];
+  employeeList!: Employee[];
 
   constructor(
     private employeeService: EmployeeService,
@@ -35,6 +33,11 @@ export class EmployeeListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.refreshEmployeeList();
+  }
+
+  initializeForm(): void {
     this.employeeForm = this.fb.group({
       name: ['', Validators.required],
       department: ['', Validators.required],
@@ -42,49 +45,71 @@ export class EmployeeListComponent implements OnInit {
       salary: [0, [Validators.required, Validators.min(0)]],
       is_active: [true],
     });
-
-    this.fetchEmployees();
   }
-  fetchEmployees(): void {
-    this.employeeService.getEmployees().subscribe({
-      next: (employees) => {
-        this.employees = employees;
-      },
-      error: (err) => {},
+
+  loadEmployees(): Observable<Employee[]> {
+    return this.employeeService.getEmployees().pipe(
+      catchError((err) => {
+        console.error('Error loading employees:', err);
+        return of([]); // 返回空数组，避免错误中断
+      })
+    );
+  }
+
+  refreshEmployeeList(): void {
+    this.loadEmployees().subscribe((employees) => {
+      this.employeeList = employees;
     });
   }
 
-  openModal(template: TemplateRef<void>) {
+  openModal(template: TemplateRef<void>): void {
     this.modalRef = this.modalService.show(template);
   }
 
-  onSubmit(): void {
+  validateForm(): boolean {
     if (this.employeeForm.invalid) {
-      // 标记所有控件为脏，以便显示验证信息
       this.employeeForm.markAllAsTouched();
+      return false;
+    }
+    return true;
+  }
+
+  hideModalAndResetForm(): void {
+    this.modalRef?.hide();
+    this.modalRef = undefined;
+    this.employeeForm.reset({ is_active: true });
+  }
+
+
+  submitEmployee(employee: Employee): void {
+    this.employeeService.createEmployee(employee).subscribe({
+      next: () => {
+        this.hideModalAndResetForm();
+        this.refreshEmployeeList();
+      },
+      error: (err) => {
+        console.error('Error creating employee:', err);
+      },
+    });
+  }
+
+  createEmployee(): void {
+    if (!this.validateForm()) {
       return;
     }
 
-    if (this.employeeForm.valid) {
-      const newEmployee: Employee = this.employeeForm.value;
-      this.employeeService.createEmployee(newEmployee).subscribe({
-        next: (employee) => {
-          this.modalRef?.hide();
-          this.fetchEmployees();
-          // 清空表单的值
-          this.employeeForm.reset();
-        },
-        error: (err) => {},
-      });
-    }
+    const newEmployee: Employee = this.employeeForm.value;
+    this.submitEmployee(newEmployee);
   }
 
-  onDelete(id:string): void {
+  removeEmployee(id: string): void {
     this.employeeService.deleteEmployee(id).subscribe({
-      next: (employee) => {
-        this.fetchEmployees();
+      next: () => {
+        this.refreshEmployeeList();
       },
-      error: (err) => {},
+      error: (err) => {
+        console.error('Error removing employee:', err);
+      },
     });
   }
 }
